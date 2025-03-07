@@ -21,7 +21,7 @@ alter table "public"."addresses" enable row level security;
 create table "public"."cart_items" (
     "id" uuid not null default gen_random_uuid(),
     "user_id" uuid not null,
-    "fish_id" uuid not null,
+    "meat_id" uuid not null,
     "metric" metric not null default 'kg'::metric,
     "price_type" price_type not null default 'medium_cut'::price_type,
     "weight" numeric not null,
@@ -41,16 +41,16 @@ create table "public"."categories" (
 
 alter table "public"."categories" enable row level security;
 
-create table "public"."categories_fishes" (
+create table "public"."categories_meat" (
     "category_id" uuid not null,
-    "fish_id" uuid not null,
+    "meat_id" uuid not null,
     "created_at" timestamp with time zone not null default now()
 );
 
 
-alter table "public"."categories_fishes" enable row level security;
+alter table "public"."categories_meat" enable row level security;
 
-create table "public"."fishes" (
+create table "public"."meat" (
     "id" uuid not null default gen_random_uuid(),
     "name" text not null,
     "description" text,
@@ -67,13 +67,13 @@ create table "public"."fishes" (
     "cleaned_without_head_price" numeric not null default '0'::numeric,
     "uncleaned_with_head_price" numeric not null default '0'::numeric,
     "uncleaned_without_head_price" numeric not null default '0'::numeric,
-    "uses_cut_fish_price" boolean not null default true,
-    "uses_whole_fish_price" boolean not null default false,
+    "uses_cut_meat_price" boolean not null default true,
+    "uses_whole_meat_price" boolean not null default false,
     "created_at" timestamp with time zone not null default now()
 );
 
 
-alter table "public"."fishes" enable row level security;
+alter table "public"."meat" enable row level security;
 
 create table "public"."media" (
     "id" uuid not null default gen_random_uuid(),
@@ -91,7 +91,7 @@ create table "public"."order_details" (
     "price" numeric not null default 0.00,
     "metric" metric not null default 'kg'::metric,
     "weight" numeric not null default 0.00,
-    "fish_id" uuid not null,
+    "meat_id" uuid not null,
     "order_id" uuid not null,
     "price_type" price_type not null default 'medium_cut'::price_type,
     "created_at" timestamp with time zone not null default now()
@@ -146,11 +146,11 @@ CREATE UNIQUE INDEX addresses_pkey ON public.addresses USING btree (id);
 
 CREATE UNIQUE INDEX cart_items_pkey ON public.cart_items USING btree (id);
 
-CREATE UNIQUE INDEX categories_fishes_pkey ON public.categories_fishes USING btree (category_id, fish_id);
+CREATE UNIQUE INDEX categories_meat_pkey ON public.categories_meat USING btree (category_id, meat_id);
 
 CREATE UNIQUE INDEX categories_pkey ON public.categories USING btree (id);
 
-CREATE UNIQUE INDEX fishes_pkey ON public.fishes USING btree (id);
+CREATE UNIQUE INDEX meat_pkey ON public.meat USING btree (id);
 
 CREATE UNIQUE INDEX media_pkey ON public.media USING btree (id);
 
@@ -168,9 +168,9 @@ alter table "public"."cart_items" add constraint "cart_items_pkey" PRIMARY KEY u
 
 alter table "public"."categories" add constraint "categories_pkey" PRIMARY KEY using index "categories_pkey";
 
-alter table "public"."categories_fishes" add constraint "categories_fishes_pkey" PRIMARY KEY using index "categories_fishes_pkey";
+alter table "public"."categories_meat" add constraint "categories_meat_pkey" PRIMARY KEY using index "categories_meat_pkey";
 
-alter table "public"."fishes" add constraint "fishes_pkey" PRIMARY KEY using index "fishes_pkey";
+alter table "public"."meat" add constraint "meat_pkey" PRIMARY KEY using index "meat_pkey";
 
 alter table "public"."media" add constraint "media_pkey" PRIMARY KEY using index "media_pkey";
 
@@ -186,9 +186,9 @@ alter table "public"."addresses" add constraint "addresses_user_id_fkey" FOREIGN
 
 alter table "public"."addresses" validate constraint "addresses_user_id_fkey";
 
-alter table "public"."cart_items" add constraint "cart_items_fish_id_fkey" FOREIGN KEY (fish_id) REFERENCES fishes(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
+alter table "public"."cart_items" add constraint "cart_items_meat_id_fkey" FOREIGN KEY (meat_id) REFERENCES meat(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
-alter table "public"."cart_items" validate constraint "cart_items_fish_id_fkey";
+alter table "public"."cart_items" validate constraint "cart_items_meat_id_fkey";
 
 alter table "public"."cart_items" add constraint "cart_items_user_id_fkey" FOREIGN KEY (user_id) REFERENCES auth.users(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
@@ -198,25 +198,25 @@ alter table "public"."categories" add constraint "categories_media_id_fkey" FORE
 
 alter table "public"."categories" validate constraint "categories_media_id_fkey";
 
-alter table "public"."categories_fishes" add constraint "categories_fishes_category_id_fkey" FOREIGN KEY (category_id) REFERENCES categories(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
+alter table "public"."categories_meat" add constraint "categories_meat_category_id_fkey" FOREIGN KEY (category_id) REFERENCES categories(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
-alter table "public"."categories_fishes" validate constraint "categories_fishes_category_id_fkey";
+alter table "public"."categories_meat" validate constraint "categories_meat_category_id_fkey";
 
-alter table "public"."categories_fishes" add constraint "categories_fishes_fish_id_fkey" FOREIGN KEY (fish_id) REFERENCES fishes(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
+alter table "public"."categories_meat" add constraint "categories_meat_meat_id_fkey" FOREIGN KEY (meat_id) REFERENCES meat(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
-alter table "public"."categories_fishes" validate constraint "categories_fishes_fish_id_fkey";
+alter table "public"."categories_meat" validate constraint "categories_meat_meat_id_fkey";
 
-alter table "public"."fishes" add constraint "fishes_media_id_fkey" FOREIGN KEY (media_id) REFERENCES media(id) not valid;
+alter table "public"."meat" add constraint "meat_media_id_fkey" FOREIGN KEY (media_id) REFERENCES media(id) not valid;
 
-alter table "public"."fishes" validate constraint "fishes_media_id_fkey";
+alter table "public"."meat" validate constraint "meat_media_id_fkey";
 
 alter table "public"."media" add constraint "media_object_id_fkey" FOREIGN KEY (object_id) REFERENCES storage.objects(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
 alter table "public"."media" validate constraint "media_object_id_fkey";
 
-alter table "public"."order_details" add constraint "order_details_fish_id_fkey" FOREIGN KEY (fish_id) REFERENCES fishes(id) ON UPDATE CASCADE ON DELETE SET NULL not valid;
+alter table "public"."order_details" add constraint "order_details_meat_id_fkey" FOREIGN KEY (meat_id) REFERENCES meat(id) ON UPDATE CASCADE ON DELETE SET NULL not valid;
 
-alter table "public"."order_details" validate constraint "order_details_fish_id_fkey";
+alter table "public"."order_details" validate constraint "order_details_meat_id_fkey";
 
 alter table "public"."order_details" add constraint "order_details_order_id_fkey" FOREIGN KEY (order_id) REFERENCES orders(id) ON UPDATE CASCADE ON DELETE CASCADE not valid;
 
@@ -402,117 +402,117 @@ grant truncate on table "public"."categories" to "service_role";
 
 grant update on table "public"."categories" to "service_role";
 
-grant delete on table "public"."categories_fishes" to "anon";
+grant delete on table "public"."categories_meat" to "anon";
 
-grant insert on table "public"."categories_fishes" to "anon";
+grant insert on table "public"."categories_meat" to "anon";
 
-grant references on table "public"."categories_fishes" to "anon";
+grant references on table "public"."categories_meat" to "anon";
 
-grant select on table "public"."categories_fishes" to "anon";
+grant select on table "public"."categories_meat" to "anon";
 
-grant trigger on table "public"."categories_fishes" to "anon";
+grant trigger on table "public"."categories_meat" to "anon";
 
-grant truncate on table "public"."categories_fishes" to "anon";
+grant truncate on table "public"."categories_meat" to "anon";
 
-grant update on table "public"."categories_fishes" to "anon";
+grant update on table "public"."categories_meat" to "anon";
 
-grant delete on table "public"."categories_fishes" to "authenticated";
+grant delete on table "public"."categories_meat" to "authenticated";
 
-grant insert on table "public"."categories_fishes" to "authenticated";
+grant insert on table "public"."categories_meat" to "authenticated";
 
-grant references on table "public"."categories_fishes" to "authenticated";
+grant references on table "public"."categories_meat" to "authenticated";
 
-grant select on table "public"."categories_fishes" to "authenticated";
+grant select on table "public"."categories_meat" to "authenticated";
 
-grant trigger on table "public"."categories_fishes" to "authenticated";
+grant trigger on table "public"."categories_meat" to "authenticated";
 
-grant truncate on table "public"."categories_fishes" to "authenticated";
+grant truncate on table "public"."categories_meat" to "authenticated";
 
-grant update on table "public"."categories_fishes" to "authenticated";
+grant update on table "public"."categories_meat" to "authenticated";
 
-grant delete on table "public"."categories_fishes" to "postgres";
+grant delete on table "public"."categories_meat" to "postgres";
 
-grant insert on table "public"."categories_fishes" to "postgres";
+grant insert on table "public"."categories_meat" to "postgres";
 
-grant references on table "public"."categories_fishes" to "postgres";
+grant references on table "public"."categories_meat" to "postgres";
 
-grant select on table "public"."categories_fishes" to "postgres";
+grant select on table "public"."categories_meat" to "postgres";
 
-grant trigger on table "public"."categories_fishes" to "postgres";
+grant trigger on table "public"."categories_meat" to "postgres";
 
-grant truncate on table "public"."categories_fishes" to "postgres";
+grant truncate on table "public"."categories_meat" to "postgres";
 
-grant update on table "public"."categories_fishes" to "postgres";
+grant update on table "public"."categories_meat" to "postgres";
 
-grant delete on table "public"."categories_fishes" to "service_role";
+grant delete on table "public"."categories_meat" to "service_role";
 
-grant insert on table "public"."categories_fishes" to "service_role";
+grant insert on table "public"."categories_meat" to "service_role";
 
-grant references on table "public"."categories_fishes" to "service_role";
+grant references on table "public"."categories_meat" to "service_role";
 
-grant select on table "public"."categories_fishes" to "service_role";
+grant select on table "public"."categories_meat" to "service_role";
 
-grant trigger on table "public"."categories_fishes" to "service_role";
+grant trigger on table "public"."categories_meat" to "service_role";
 
-grant truncate on table "public"."categories_fishes" to "service_role";
+grant truncate on table "public"."categories_meat" to "service_role";
 
-grant update on table "public"."categories_fishes" to "service_role";
+grant update on table "public"."categories_meat" to "service_role";
 
-grant delete on table "public"."fishes" to "anon";
+grant delete on table "public"."meat" to "anon";
 
-grant insert on table "public"."fishes" to "anon";
+grant insert on table "public"."meat" to "anon";
 
-grant references on table "public"."fishes" to "anon";
+grant references on table "public"."meat" to "anon";
 
-grant select on table "public"."fishes" to "anon";
+grant select on table "public"."meat" to "anon";
 
-grant trigger on table "public"."fishes" to "anon";
+grant trigger on table "public"."meat" to "anon";
 
-grant truncate on table "public"."fishes" to "anon";
+grant truncate on table "public"."meat" to "anon";
 
-grant update on table "public"."fishes" to "anon";
+grant update on table "public"."meat" to "anon";
 
-grant delete on table "public"."fishes" to "authenticated";
+grant delete on table "public"."meat" to "authenticated";
 
-grant insert on table "public"."fishes" to "authenticated";
+grant insert on table "public"."meat" to "authenticated";
 
-grant references on table "public"."fishes" to "authenticated";
+grant references on table "public"."meat" to "authenticated";
 
-grant select on table "public"."fishes" to "authenticated";
+grant select on table "public"."meat" to "authenticated";
 
-grant trigger on table "public"."fishes" to "authenticated";
+grant trigger on table "public"."meat" to "authenticated";
 
-grant truncate on table "public"."fishes" to "authenticated";
+grant truncate on table "public"."meat" to "authenticated";
 
-grant update on table "public"."fishes" to "authenticated";
+grant update on table "public"."meat" to "authenticated";
 
-grant delete on table "public"."fishes" to "postgres";
+grant delete on table "public"."meat" to "postgres";
 
-grant insert on table "public"."fishes" to "postgres";
+grant insert on table "public"."meat" to "postgres";
 
-grant references on table "public"."fishes" to "postgres";
+grant references on table "public"."meat" to "postgres";
 
-grant select on table "public"."fishes" to "postgres";
+grant select on table "public"."meat" to "postgres";
 
-grant trigger on table "public"."fishes" to "postgres";
+grant trigger on table "public"."meat" to "postgres";
 
-grant truncate on table "public"."fishes" to "postgres";
+grant truncate on table "public"."meat" to "postgres";
 
-grant update on table "public"."fishes" to "postgres";
+grant update on table "public"."meat" to "postgres";
 
-grant delete on table "public"."fishes" to "service_role";
+grant delete on table "public"."meat" to "service_role";
 
-grant insert on table "public"."fishes" to "service_role";
+grant insert on table "public"."meat" to "service_role";
 
-grant references on table "public"."fishes" to "service_role";
+grant references on table "public"."meat" to "service_role";
 
-grant select on table "public"."fishes" to "service_role";
+grant select on table "public"."meat" to "service_role";
 
-grant trigger on table "public"."fishes" to "service_role";
+grant trigger on table "public"."meat" to "service_role";
 
-grant truncate on table "public"."fishes" to "service_role";
+grant truncate on table "public"."meat" to "service_role";
 
-grant update on table "public"."fishes" to "service_role";
+grant update on table "public"."meat" to "service_role";
 
 grant delete on table "public"."media" to "anon";
 
@@ -877,7 +877,7 @@ using ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable delete for admins"
-on "public"."categories_fishes"
+on "public"."categories_meat"
 as permissive
 for delete
 to authenticated
@@ -887,7 +887,7 @@ using ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable insert for admins"
-on "public"."categories_fishes"
+on "public"."categories_meat"
 as permissive
 for insert
 to authenticated
@@ -897,7 +897,7 @@ with check ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable read access for all users"
-on "public"."categories_fishes"
+on "public"."categories_meat"
 as permissive
 for select
 to public
@@ -905,7 +905,7 @@ using (true);
 
 
 create policy "Enable update for admins"
-on "public"."categories_fishes"
+on "public"."categories_meat"
 as permissive
 for update
 to authenticated
@@ -915,7 +915,7 @@ using ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable delete for admins"
-on "public"."fishes"
+on "public"."meat"
 as permissive
 for delete
 to authenticated
@@ -925,7 +925,7 @@ using ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable insert for authenticated users"
-on "public"."fishes"
+on "public"."meat"
 as permissive
 for insert
 to authenticated
@@ -935,7 +935,7 @@ with check ((auth.uid() IN ( SELECT profiles.user_id
 
 
 create policy "Enable read access for all users"
-on "public"."fishes"
+on "public"."meat"
 as permissive
 for select
 to public
@@ -943,7 +943,7 @@ using (true);
 
 
 create policy "Enable update for admins"
-on "public"."fishes"
+on "public"."meat"
 as permissive
 for update
 to authenticated

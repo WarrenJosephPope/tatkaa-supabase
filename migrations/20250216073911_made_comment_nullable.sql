@@ -42,33 +42,33 @@ grant truncate on table "public"."categories" to "postgres";
 
 grant update on table "public"."categories" to "postgres";
 
-grant delete on table "public"."categories_fishes" to "postgres";
+grant delete on table "public"."categories_meat" to "postgres";
 
-grant insert on table "public"."categories_fishes" to "postgres";
+grant insert on table "public"."categories_meat" to "postgres";
 
-grant references on table "public"."categories_fishes" to "postgres";
+grant references on table "public"."categories_meat" to "postgres";
 
-grant select on table "public"."categories_fishes" to "postgres";
+grant select on table "public"."categories_meat" to "postgres";
 
-grant trigger on table "public"."categories_fishes" to "postgres";
+grant trigger on table "public"."categories_meat" to "postgres";
 
-grant truncate on table "public"."categories_fishes" to "postgres";
+grant truncate on table "public"."categories_meat" to "postgres";
 
-grant update on table "public"."categories_fishes" to "postgres";
+grant update on table "public"."categories_meat" to "postgres";
 
-grant delete on table "public"."fishes" to "postgres";
+grant delete on table "public"."meat" to "postgres";
 
-grant insert on table "public"."fishes" to "postgres";
+grant insert on table "public"."meat" to "postgres";
 
-grant references on table "public"."fishes" to "postgres";
+grant references on table "public"."meat" to "postgres";
 
-grant select on table "public"."fishes" to "postgres";
+grant select on table "public"."meat" to "postgres";
 
-grant trigger on table "public"."fishes" to "postgres";
+grant trigger on table "public"."meat" to "postgres";
 
-grant truncate on table "public"."fishes" to "postgres";
+grant truncate on table "public"."meat" to "postgres";
 
-grant update on table "public"."fishes" to "postgres";
+grant update on table "public"."meat" to "postgres";
 
 grant delete on table "public"."media" to "postgres";
 
